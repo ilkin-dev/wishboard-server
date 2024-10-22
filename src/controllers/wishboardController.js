@@ -1,11 +1,38 @@
 const Wishboard = require('../models/wishboard');
 
-exports.getAllWishboards = async (req, res) => {
+// exports.getAllWishboards = async (req, res) => {
+//     try {
+//         const wishboards = await Wishboard.findAllWithUsers();
+//         res.status(200).json(wishboards);
+//     } catch (error) {
+//         res.status(500).json({ error: 'Failed to fetch wishboards' });
+//     }
+// };
+
+exports.getAllPublicWishboards = async (req, res) => {
     try {
-        const wishboards = await Wishboard.findAllWithUsers();
+        const wishboards = await Wishboard.findAllPublic();
         res.status(200).json(wishboards);
     } catch (error) {
+        console.error('Error fetching public wishboards:', error);
         res.status(500).json({ error: 'Failed to fetch wishboards' });
+    }
+};
+
+exports.getPublicWishboardsWithPagination = async (req, res) => {
+    const { start = 0, limit = 6 } = req.query; // Use query parameters for pagination
+
+    try {
+        const wishboards = await Wishboard.findPublicWithPagination(parseInt(start), parseInt(limit));
+
+        if (wishboards.length === 0) {
+            return res.status(200).json([]); // Return empty array if no wishboards are found
+        }
+
+        res.status(200).json(wishboards);
+    } catch (error) {
+        console.error('Error fetching paginated wishboards:', error);
+        res.status(500).json({ error: 'Failed to fetch paginated wishboards' });
     }
 };
 
