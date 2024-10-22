@@ -7,7 +7,23 @@ exports.create = (wishboardData) => {
 exports.findById = (id) => {
     return knex('wishboards')
         .where({ id })
-        .first();  // This should return the full wishboard data
+        .first();
+};
+
+exports.findAllPublic = () => {
+    return knex('wishboards')
+        .join('users', 'wishboards.googleId', '=', 'users.googleId')
+        .select('wishboards.*', 'users.name as username')
+        .where('wishboards.isPublic', true);
+};
+
+exports.findPublicWithPagination = (start, limit) => {
+    return knex('wishboards')
+        .join('users', 'wishboards.googleId', '=', 'users.googleId')
+        .select('wishboards.*', 'users.name as username')
+        .where('wishboards.isPublic', true)
+        .offset(start)
+        .limit(limit);
 };
 
 exports.findByUserId = (googleId) => {
